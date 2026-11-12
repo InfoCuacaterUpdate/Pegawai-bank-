@@ -5,30 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obrolan</title>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background: #e5ddd5; }
-        /* Sidebar Kiri (Daftar Teman) */
-        #sidebar { width: 30%; background: #ffffff; border-right: 1px solid #ccc; display: flex; flex-direction: column; }
-        .header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
-        .search-box { padding: 10px; border-bottom: 1px solid #ddd; }
-        .search-box input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        * { box-sizing: border-box; }
+        body { font-family: sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background: #e5ddd5; overflow: hidden; }
+
+        /* SIDEBAR KIRI */
+        #sidebar { width: 30%; background: #ffffff; border-right: 1px solid #ccc; display: flex; flex-direction: column; height: 100%; }
+        .header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .search-box { padding: 10px; border-bottom: 1px solid #ddd; background: #f0f0f0; }
+        .search-box input { width: 100%; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         #searchResults { overflow-y: auto; flex: 1; }
-        .user-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .user-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: bold; }
         .user-item:hover { background: #f9f9f9; }
+
+        /* AREA CHAT KANAN */
+        #main-chat { width: 70%; display: flex; flex-direction: column; height: 100%; position: relative; background: #e5ddd5; }
+        #chat-header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; align-items: center; }
+        #btnBack { display: none; background: none; border: none; color: white; font-size: 20px; margin-right: 15px; cursor: pointer; }
         
-        /* Area Chat Kanan */
-        #main-chat { width: 70%; display: flex; flex-direction: column; position: relative; }
-        #chat-header { background: #075e54; color: white; padding: 15px; font-weight: bold; }
         #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
-        .message { max-width: 60%; padding: 10px; margin-bottom: 10px; border-radius: 8px; word-wrap: break-word; }
-        .msg-me { background: #dcf8c6; align-self: flex-end; }
-        .msg-other { background: white; align-self: flex-start; }
-        .sender-name { font-size: 10px; color: gray; margin-bottom: 3px; display: block; }
-        .msg-time { font-size: 10px; color: gray; text-align: right; display: block; margin-top: 5px; }
+        .message { max-width: 75%; padding: 10px 15px; margin-bottom: 10px; border-radius: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 14px;}
+        .msg-me { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .sender-name { font-size: 11px; color: #075e54; margin-bottom: 3px; display: block; font-weight: bold; }
         
-        /* Input Area */
-        #input-area { display: flex; padding: 10px; background: #f0f0f0; }
-        #input-area input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-        #input-area button { margin-left: 10px; padding: 10px 15px; border: none; background: #075e54; color: white; border-radius: 50%; cursor: pointer; }
+        /* INPUT AREA */
+        #input-area { display: none; padding: 10px; background: #f0f0f0; align-items: center; }
+        #input-area input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; font-size: 14px;}
+        #input-area button { margin-left: 8px; padding: 10px 15px; border: none; background: #075e54; color: white; border-radius: 50%; cursor: pointer; font-size: 16px;}
+        #btnLokasi { background: #007bff !important; }
+
+        /* TAMPILAN UNTUK HP (MOBILE) */
+        @media (max-width: 768px) {
+            #sidebar { width: 100%; }
+            #main-chat { width: 100%; display: none; } /* Sembunyikan chat di awal */
+            
+            /* Class khusus untuk JS memunculkan chat */
+            body.show-chat #sidebar { display: none; }
+            body.show-chat #main-chat { display: flex; }
+            
+            #btnBack { display: block; } /* Tampilkan tombol kembali */
+        }
     </style>
 </head>
 <body>
@@ -37,54 +53,63 @@
     <div id="sidebar">
         <div class="header">
             <span id="myUsername">Memuat...</span>
-            <button id="btnLogout" style="background:red; color:white; border:none; padding:5px; cursor:pointer;">Keluar</button>
+            <button id="btnLogout" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">Keluar</button>
         </div>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Cari username teman...">
         </div>
         <div id="searchResults">
-            <p style="padding:10px; color:gray; font-size:12px;">Ketik username untuk mencari teman.</p>
+            <p style="padding:10px; color:gray; font-size:12px; text-align:center; margin-top:20px;">Ketik username teman Anda.</p>
         </div>
     </div>
 
     <!-- AREA OBROLAN -->
     <div id="main-chat">
-        <div id="chat-header">Pilih teman untuk mulai mengobrol</div>
+        <div id="chat-header">
+            <button id="btnBack">&#8592;</button> <!-- Ikon Panah Kiri -->
+            <span id="chatTitle">Pilih teman untuk mulai mengobrol</span>
+        </div>
         <div id="messages"></div>
         
         <!-- Area Ketik -->
-        <div id="input-area" style="display: none;">
-            <button id="btnLokasi" title="Kirim Lokasi" style="background:#007bff; margin-right:5px;">📍</button>
+        <div id="input-area">
+            <button id="btnLokasi" title="Kirim Lokasi">📍</button>
             <input type="text" id="messageInput" placeholder="Ketik pesan...">
-            <button id="btnKirim">Kirim</button>
+            <button id="btnKirim">&#10148;</button> <!-- Ikon Pesan Terbang -->
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, query, orderByChild, equalTo, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
         import { firebaseConfig } from './firebase-config.js';
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUser = null; // Menyimpan data user yang login
-        let activeChatUser = null; // Menyimpan data teman yang sedang di-chat
+        let currentUser = null;
+        let activeChatUser = null;
         let chatRoomId = null;
+        let unreadListener = null;
+
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
+        const messagesDiv = document.getElementById("messages");
+        const inputArea = document.getElementById("input-area");
+        const chatTitle = document.getElementById("chatTitle");
 
         // 1. CEK STATUS LOGIN
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Ambil username dari database
                 const snapshot = await get(ref(db, 'users/' + user.uid));
                 if (snapshot.exists()) {
                     currentUser = { uid: user.uid, username: snapshot.val().username };
                     document.getElementById("myUsername").innerText = currentUser.username;
                 }
             } else {
-                window.location.href = "index.html"; // Tendang ke login jika belum masuk
+                window.location.href = "index.html";
             }
         });
 
@@ -93,20 +118,16 @@
             signOut(auth).then(() => window.location.href = "index.html");
         });
 
-        // 3. FITUR PENCARIAN USERNAME
-        const searchInput = document.getElementById("searchInput");
-        const searchResults = document.getElementById("searchResults");
-
+        // 3. PENCARIAN USERNAME
         searchInput.addEventListener("input", async (e) => {
             const keyword = e.target.value.toLowerCase().trim();
             searchResults.innerHTML = "";
 
             if (keyword.length < 1) {
-                searchResults.innerHTML = "<p style='padding:10px; color:gray; font-size:12px;'>Ketik username untuk mencari teman.</p>";
+                searchResults.innerHTML = "<p style='padding:10px; color:gray; font-size:12px; text-align:center; margin-top:20px;'>Ketik username teman Anda.</p>";
                 return;
             }
 
-            // Cari di database users yang username-nya sama persis
             const usersRef = query(ref(db, 'users'), orderByChild('username'), equalTo(keyword));
             const snapshot = await get(usersRef);
 
@@ -115,7 +136,7 @@
                     const userData = childSnapshot.val();
                     const uid = childSnapshot.key;
 
-                    if (uid !== currentUser.uid) { // Jangan tampilkan diri sendiri
+                    if (uid !== currentUser.uid) {
                         const div = document.createElement("div");
                         div.className = "user-item";
                         div.innerText = userData.username;
@@ -124,29 +145,38 @@
                     }
                 });
             } else {
-                searchResults.innerHTML = "<p style='padding:10px; color:red; font-size:12px;'>User tidak ditemukan.</p>";
+                searchResults.innerHTML = "<p style='padding:10px; color:red; font-size:12px; text-align:center; margin-top:20px;'>User tidak ditemukan.</p>";
             }
         });
 
         // 4. FUNGSI MEMULAI CHAT
         function mulaiChat(targetUid, targetUsername) {
             activeChatUser = { uid: targetUid, username: targetUsername };
-            document.getElementById("chat-header").innerText = "Obrolan dengan: " + targetUsername;
-            document.getElementById("input-area").style.display = "flex";
-
-            // Buat ID Room (Diurutkan Abjad agar unik untuk 2 orang)
-            chatRoomId = [currentUser.uid, targetUid].sort().join("_");
+            chatTitle.innerText = targetUsername; 
             
-            // Tampilkan pesan
+            // Tampilkan area input
+            inputArea.style.display = "flex";
+            
+            // Di HP, pindah ke layar chat
+            document.body.classList.add('show-chat'); 
+
+            // Buat ID Room
+            chatRoomId = [currentUser.uid, targetUid].sort().join("_");
             tampilkanPesan();
         }
 
-        // 5. TAMPILKAN PESAN & KIRIM PESAN
-        const messagesDiv = document.getElementById("messages");
-        let unreadListener = null;
-
-        function tampilkanPesan() {
+        // Tombol Kembali (Untuk HP)
+        document.getElementById("btnBack").addEventListener("click", () => {
+            document.body.classList.remove('show-chat');
+            chatTitle.innerText = "Pilih teman untuk mulai mengobrol";
+            inputArea.style.display = "none";
+            messagesDiv.innerHTML = ""; // Kosongkan chat sementara
             if(unreadListener) unreadListener(); // Matikan listener chat sebelumnya
+        });
+
+        // 5. TAMPILKAN PESAN
+        function tampilkanPesan() {
+            if(unreadListener) unreadListener();
             messagesDiv.innerHTML = "";
 
             const chatRef = ref(db, 'chats/' + chatRoomId + '/messages');
@@ -163,9 +193,8 @@
                         let konten = "";
                         if (msg.text) konten = msg.text;
                         if (msg.location) {
-                            konten = `<a href="https://www.google.com/maps?q=${msg.location.lat},${msg.location.lng}" target="_blank">📍 Lihat Lokasi Pengirim</a>`;
+                            konten = `<a href="https://www.google.com/maps?q=${msg.location.lat},${msg.location.lng}" target="_blank" style="color:#007bff; text-decoration:none;">📍 Lihat Lokasi</a>`;
                         }
-                        // Nanti bisa ditambahkan logika untuk msg.imageUrl
 
                         div.innerHTML = `
                             ${!isMe ? `<span class="sender-name">${activeChatUser.username}</span>` : ''}
@@ -173,12 +202,12 @@
                         `;
                         messagesDiv.appendChild(div);
                     });
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll ke bawah
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 }
             });
         }
 
-        // Fungsi Kirim Pesan
+        // 6. KIRIM PESAN
         function kirimPesan(teks, lokasi = null) {
             if (!chatRoomId) return;
             
@@ -193,7 +222,7 @@
             push(pesanRef, dataPesan);
         }
 
-        // Event Listener Tombol Kirim Teks
+        // Event Listener
         document.getElementById("btnKirim").addEventListener("click", () => {
             const input = document.getElementById("messageInput");
             if (input.value.trim() !== "") {
@@ -202,18 +231,16 @@
             }
         });
 
-        // Event Listener Enter
         document.getElementById("messageInput").addEventListener("keypress", (e) => {
             if (e.key === 'Enter') document.getElementById("btnKirim").click();
         });
 
-        // Event Listener Tombol Lokasi
         document.getElementById("btnLokasi").addEventListener("click", () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
                     const lokasi = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     kirimPesan(null, lokasi);
-                }, () => alert("Gagal mengambil lokasi. Pastikan izin lokasi aktif."));
+                }, () => alert("Gagal mengambil lokasi. Pastikan izin GPS/Lokasi di HP Anda aktif."));
             } else {
                 alert("Browser Anda tidak mendukung fitur lokasi.");
             }
@@ -221,4 +248,4 @@
 
     </script>
 </body>
-</html>
+    </html>
