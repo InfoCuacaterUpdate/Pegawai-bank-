@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Aplikasi Obrolan</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; }
+        h2 { text-align: center; color: #333; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        #pesan { text-align: center; font-size: 14px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>Obrolan App</h2>
+        <input type="text" id="username" placeholder="Username (Untuk Obrolan)">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password (Min. 6 Karakter)">
+        <button id="btnDaftar">Daftar Akun</button>
+        <button id="btnLogin" style="background-color: #28a745;">Masuk (Login)</button>
+        <p id="pesan"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { firebaseConfig } from './firebase-config.js';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const inputUsername = document.getElementById("username");
+        const inputEmail = document.getElementById("email");
+        const inputPassword = document.getElementById("password");
+        const textPesan = document.getElementById("pesan");
+
+        // LOGIKA DAFTAR
+        document.getElementById("btnDaftar").addEventListener("click", () => {
+            const username = inputUsername.value.trim();
+            const email = inputEmail.value;
+            const password = inputPassword.value;
+
+            if(!username) { textPesan.style.color = "red"; textPesan.innerText = "Username wajib diisi!"; return; }
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Simpan username ke database berdasarkan UID user
+                    const user = userCredential.user;
+                    set(ref(db, 'users/' + user.uid), {
+                        username: username.toLowerCase(),
+                        email: email
+                    }).then(() => {
+                        textPesan.style.color = "green";
+                        textPesan.innerText = "Berhasil daftar! Silakan Login.";
+                    });
+                })
+                .catch((error) => {
+                    textPesan.style.color = "red";
+                    textPesan.innerText = "Gagal: " + error.message;
+                });
+        });
+
+        // LOGIKA LOGIN
+        document.getElementById("btnLogin").addEventListener("click", () => {
+            const email = inputEmail.value;
+            const password = inputPassword.value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    // Jika login sukses, pindah ke halaman chat
+                    window.location.href = "chat.html";
+                })
+                .catch((error) => {
+                    textPesan.style.color = "red";
+                    textPesan.innerText = "Login Gagal: " + error.message;
+                });
+        });
+    </script>
+</body>
+</html>
