@@ -6,44 +6,62 @@
     <title>Obrolan</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background: #e5ddd5; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background: #e5ddd5; overflow: hidden; }
 
         /* SIDEBAR KIRI */
         #sidebar { width: 30%; background: #ffffff; border-right: 1px solid #ccc; display: flex; flex-direction: column; height: 100%; }
         .header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { padding: 10px; border-bottom: 1px solid #ddd; background: #f0f0f0; }
-        .search-box input { width: 100%; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-        #searchResults { overflow-y: auto; flex: 1; }
-        .user-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: bold; }
-        .user-item:hover { background: #f9f9f9; }
+        .search-box { padding: 15px; border-bottom: 1px solid #ddd; background: #f0f0f0; }
+        .search-box input { width: 100%; padding: 12px 20px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 14px;}
+        
+        #searchResults { overflow-y: auto; flex: 1; padding: 10px; }
+        
+        /* DESAIN KARTU TEMAN BARU */
+        .user-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 15px; 
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .user-item:hover { background: #f0f8ff; border-color: #007bff; }
+        .avatar { 
+            width: 40px; height: 40px; 
+            background: #007bff; color: white; 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; font-size: 18px; margin-right: 15px;
+        }
+        .user-name { font-weight: bold; color: #333; font-size: 16px;}
 
         /* AREA CHAT KANAN */
         #main-chat { width: 70%; display: flex; flex-direction: column; height: 100%; position: relative; background: #e5ddd5; }
         #chat-header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; align-items: center; }
-        #btnBack { display: none; background: none; border: none; color: white; font-size: 20px; margin-right: 15px; cursor: pointer; }
+        #btnBack { display: none; background: none; border: none; color: white; font-size: 24px; margin-right: 15px; cursor: pointer; }
         
         #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
         .message { max-width: 75%; padding: 10px 15px; margin-bottom: 10px; border-radius: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-size: 14px;}
         .msg-me { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
         .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .sender-name { font-size: 11px; color: #075e54; margin-bottom: 3px; display: block; font-weight: bold; }
         
         /* INPUT AREA */
         #input-area { display: none; padding: 10px; background: #f0f0f0; align-items: center; }
-        #input-area input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; font-size: 14px;}
-        #input-area button { margin-left: 8px; padding: 10px 15px; border: none; background: #075e54; color: white; border-radius: 50%; cursor: pointer; font-size: 16px;}
+        #input-area input { flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 14px;}
+        #input-area button { margin-left: 8px; padding: 12px 15px; border: none; background: #075e54; color: white; border-radius: 50%; cursor: pointer; font-size: 16px;}
         #btnLokasi { background: #007bff !important; }
 
         /* TAMPILAN UNTUK HP (MOBILE) */
         @media (max-width: 768px) {
             #sidebar { width: 100%; }
-            #main-chat { width: 100%; display: none; } /* Sembunyikan chat di awal */
-            
-            /* Class khusus untuk JS memunculkan chat */
+            #main-chat { width: 100%; display: none; }
             body.show-chat #sidebar { display: none; }
             body.show-chat #main-chat { display: flex; }
-            
-            #btnBack { display: block; } /* Tampilkan tombol kembali */
+            #btnBack { display: block; }
         }
     </style>
 </head>
@@ -53,21 +71,21 @@
     <div id="sidebar">
         <div class="header">
             <span id="myUsername">Memuat...</span>
-            <button id="btnLogout" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">Keluar</button>
+            <button id="btnLogout" style="background:#ff4d4d; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;">Keluar</button>
         </div>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Cari username teman...">
         </div>
         <div id="searchResults">
-            <p style="padding:10px; color:gray; font-size:12px; text-align:center; margin-top:20px;">Ketik username teman Anda.</p>
+            <p style="text-align:center; color:#888; margin-top:20px; font-size:14px;">Ketik username teman Anda.</p>
         </div>
     </div>
 
     <!-- AREA OBROLAN -->
     <div id="main-chat">
         <div id="chat-header">
-            <button id="btnBack">&#8592;</button> <!-- Ikon Panah Kiri -->
-            <span id="chatTitle">Pilih teman untuk mulai mengobrol</span>
+            <button id="btnBack">&#8592;</button>
+            <span id="chatTitle">Pilih teman</span>
         </div>
         <div id="messages"></div>
         
@@ -75,7 +93,7 @@
         <div id="input-area">
             <button id="btnLokasi" title="Kirim Lokasi">📍</button>
             <input type="text" id="messageInput" placeholder="Ketik pesan...">
-            <button id="btnKirim">&#10148;</button> <!-- Ikon Pesan Terbang -->
+            <button id="btnKirim">&#10148;</button>
         </div>
     </div>
 
@@ -124,7 +142,7 @@
             searchResults.innerHTML = "";
 
             if (keyword.length < 1) {
-                searchResults.innerHTML = "<p style='padding:10px; color:gray; font-size:12px; text-align:center; margin-top:20px;'>Ketik username teman Anda.</p>";
+                searchResults.innerHTML = "<p style='text-align:center; color:#888; margin-top:20px; font-size:14px;'>Ketik username teman Anda.</p>";
                 return;
             }
 
@@ -137,15 +155,23 @@
                     const uid = childSnapshot.key;
 
                     if (uid !== currentUser.uid) {
+                        // Buat Kartu User
                         const div = document.createElement("div");
                         div.className = "user-item";
-                        div.innerText = userData.username;
+                        
+                        const inisial = userData.username.charAt(0).toUpperCase();
+                        
+                        div.innerHTML = `
+                            <div class="avatar">${inisial}</div>
+                            <div class="user-name">${userData.username}</div>
+                        `;
+                        
                         div.onclick = () => mulaiChat(uid, userData.username);
                         searchResults.appendChild(div);
                     }
                 });
             } else {
-                searchResults.innerHTML = "<p style='padding:10px; color:red; font-size:12px; text-align:center; margin-top:20px;'>User tidak ditemukan.</p>";
+                searchResults.innerHTML = "<p style='text-align:center; color:red; margin-top:20px; font-size:14px;'>User tidak ditemukan.</p>";
             }
         });
 
@@ -154,13 +180,9 @@
             activeChatUser = { uid: targetUid, username: targetUsername };
             chatTitle.innerText = targetUsername; 
             
-            // Tampilkan area input
             inputArea.style.display = "flex";
-            
-            // Di HP, pindah ke layar chat
             document.body.classList.add('show-chat'); 
 
-            // Buat ID Room
             chatRoomId = [currentUser.uid, targetUid].sort().join("_");
             tampilkanPesan();
         }
@@ -168,10 +190,10 @@
         // Tombol Kembali (Untuk HP)
         document.getElementById("btnBack").addEventListener("click", () => {
             document.body.classList.remove('show-chat');
-            chatTitle.innerText = "Pilih teman untuk mulai mengobrol";
+            chatTitle.innerText = "Pilih teman";
             inputArea.style.display = "none";
-            messagesDiv.innerHTML = ""; // Kosongkan chat sementara
-            if(unreadListener) unreadListener(); // Matikan listener chat sebelumnya
+            messagesDiv.innerHTML = ""; 
+            if(unreadListener) unreadListener(); 
         });
 
         // 5. TAMPILKAN PESAN
@@ -193,13 +215,10 @@
                         let konten = "";
                         if (msg.text) konten = msg.text;
                         if (msg.location) {
-                            konten = `<a href="https://www.google.com/maps?q=${msg.location.lat},${msg.location.lng}" target="_blank" style="color:#007bff; text-decoration:none;">📍 Lihat Lokasi</a>`;
+                            konten = `<a href="https://www.google.com/maps?q=${msg.location.lat},${msg.location.lng}" target="_blank" style="color:#007bff; text-decoration:none; font-weight:bold;">📍 Lihat Lokasi</a>`;
                         }
 
-                        div.innerHTML = `
-                            ${!isMe ? `<span class="sender-name">${activeChatUser.username}</span>` : ''}
-                            ${konten}
-                        `;
+                        div.innerHTML = konten;
                         messagesDiv.appendChild(div);
                     });
                     messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -248,4 +267,4 @@
 
     </script>
 </body>
-    </html>
+</html>
